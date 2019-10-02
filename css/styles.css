@@ -1,0 +1,25 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #FFFFFF;
+}
+
+#countryForm, #cityForm, #cityInfo, #visitedCities {
+    background: rgb(138, 198, 247);
+    width: 100%;
+    border-radius: 25px;
+    margin: 120px 5px 5px;
+    text-align: center;
+    padding: 10px;
+}
+
+#countrySelect, #citySelect { margin: 55px auto; }
+
+#cityInfo p {
+    text-align: justify;
+    padding: 0px;
+    border: 0px;
+    margin: 0px;
+}
+
+#visitedCities { margin-top: 5px;}

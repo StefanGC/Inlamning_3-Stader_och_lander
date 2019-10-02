@@ -1,7 +1,15 @@
+//Variabler
+var citiesVisited = [];     //Array som sparas stads-ID
+var populationVisited = []; //Array som sparas invånarna i besökta städer
+var cityId; 
+let populationTotal;
+
 //DOM
 let countryForm = document.getElementById("countryForm");
 let cityForm = document.getElementById("cityForm");
 let cityInfo = document.getElementById("cityInfo");
+let visitedCities = document.getElementById("visitedCities");
+
 
 //Functioner
 function skapaMenuLander() {
@@ -14,7 +22,7 @@ function skapaMenuLander() {
                 countrySelect += "<option value=\"" + jsonCountries[countCountry].id + "\">"+ jsonCountries[countCountry].countryname + "</option>";
             }
             countrySelect += "</select>";  
-            countryForm.innerHTML = countrySelect;   
+            countryForm.innerHTML = "<h5>Steg 1: väjl ett land</h5>" + countrySelect;  
         })
         .catch(err => console.log(JSON.stringify(err)));
 }
@@ -33,13 +41,15 @@ function skapaMenuStader() {
                 }
             }
             citySelect += "</select>";  
-            cityForm.innerHTML = citySelect;
+            cityForm.innerHTML = "<h5>Steg 2: väjl en stad</h5>" + citySelect;
+            cityForm.style.visibility = "visible";
+            cityInfo.style.visibility = "hidden"; 
         })
         .catch(err => console.log(JSON.stringify(err)));
 }
 
 function visaInfo() {
-    let cityId = document.getElementById("citySelect").value;
+    cityId = document.getElementById("citySelect").value;
     let countCities = 0;
     fetch('stad.json')
     .then(response => response.json())
@@ -49,14 +59,66 @@ function visaInfo() {
             countCities++;
         }
         //Al llegar aqui sabemos que jsonCities[countCities].id == cityId
-        cityInfo.innerHTML = "<p>Id: " + jsonCities[countCities].id + "</p>"
+        cityInfo.innerHTML = "<h5>Steg 3: information om stad</h5>";
+        cityInfo.innerHTML += "<p>Id: " + jsonCities[countCities].id + "</p>"
         cityInfo.innerHTML += "<p>Stadname: " + jsonCities[countCities].stadname + "</p>"
         cityInfo.innerHTML += "<p>Countryid: " + jsonCities[countCities].countryid + "</p>"
         cityInfo.innerHTML += "<p>population: " + jsonCities[countCities].population + "</p>"
+        cityInfo.innerHTML += "<button name=\"visitBtn\" id=\"visitBtn\" class=\"btn btn-info btn-md\">Besökt</button>";
+        
+        var cityObj = {Id: jsonCities[countCities].id, Countryid:jsonCities[countCities].countryid, population: jsonCities[countCities].population};
+
+        let visitBtn = document.getElementById("visitBtn"); //Tiene que estar aqui porque se crea el boton
+        
+        
+        //När man klickar på Besökt knapp
+        visitBtn.onclick = function () {
+            localStorage.setItem(jsonCities[countCities].stadname, JSON.stringify(cityObj));
+            visaBesoktaStader();
+        }
+
+        cityInfo.style.visibility = "visible";
     })
     .catch(err => console.log(JSON.stringify(err)));
 }
 
+function visaBesoktaStader() {
+    if (localStorage.length != 0){
+        populationTotal = 0;
+        visitedCities.innerHTML = "<h5>Städer jag besökt</h5><br>";
+        visitedCities.innerHTML += skapaTabellmedStader();
+        visitedCities.innerHTML += "<h6>Vet du summan av invånarantalet i de besökta städerna? " + populationTotal + "</h6>";
+        visitedCities.innerHTML += "<button name=\"visitBtn\" id=\"rensaHistorikBtn\" class=\"btn btn-info btn-md\">Rensa historik</button>";
+        
+        let rensaBtn = document.getElementById("rensaHistorikBtn"); 
+        
+        //När man klickar på Rensa historik knapp
+        rensaBtn.onclick = function () {
+            localStorage.clear();
+            visitedCities.innerHTML = "";
+            visitedCities.style.visibility = "hidden";
+        }
+        visitedCities.style.visibility = "visible";
+    }
+}
+
+function skapaTabellmedStader() {
+    var cityObj;
+    
+    var table = "<div class=\"table-responsive\">";
+    table += "<table class=\"table table-hover\">";
+    table += "<tr><th>City ID</th><th>Stadname</th><th>Country Id</th><th>population</th></tr>"; //Table header
+        
+     for (let i = 0; i < localStorage.length; i++) {
+        cityObj = JSON.parse(localStorage.getItem(localStorage.key(i)));
+        table += "<tr><td>"+ cityObj.Id +"</td><td>"+ localStorage.key(i) +"</td><td>"+ cityObj.Countryid +"</td><td>"+ cityObj.population +"</td></tr>";
+        populationTotal += cityObj.population;
+    }
+    table += "</table></div>";
+    return table;
+}
 
 //Själva kod
 skapaMenuLander();
+
+visaBesoktaStader();
