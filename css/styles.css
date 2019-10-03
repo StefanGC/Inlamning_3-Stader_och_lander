@@ -1,14 +1,19 @@
 body {
     margin: 0;
     padding: 0;
-    background-color: #FFFFFF;
+    background-color: #17a2b8;
+}
+
+h1 {
+    margin-top: 30px;
+    text-align: center;
 }
 
 #countryForm, #cityForm, #cityInfo, #visitedCities {
     background: rgb(138, 198, 247);
     width: 100%;
     border-radius: 25px;
-    margin: 120px 5px 5px;
+    margin: 50px 5px 5px;
     text-align: center;
     padding: 10px;
 }
